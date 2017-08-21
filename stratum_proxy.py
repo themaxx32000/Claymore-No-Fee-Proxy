@@ -173,8 +173,8 @@ def proxy_handler(client_socket, remote_host, remote_port):
 
 def main():
     # cursory check of command line args
-    if len(sys.argv[1:]) != 5:
-        print "Usage: ./proxy.py [localhost] [localport] [remotehost] [remoteport] [ETH Wallet]"
+    if len(sys.argv[1:]) <= 5:
+        print "Usage: ./proxy.py [localhost] [localport] [remotehost] [remoteport] [ETH Wallet] [workername]"
         print "Example: ./proxy.py 127.0.0.1 9000 eth.realpool.org 9000 0x..."
         sys.exit(0)
 
@@ -187,32 +187,20 @@ def main():
     remote_port = int(sys.argv[4])
 
     # Set the wallet
-    global wallet 
+    global wallet
     wallet = sys.argv[5]
     
+    # Set the worker name
     global worker_name
-    worker_name = 'rekt'
+    if len(sys.argv[6]):
+        worker_name = sys.argv[6]
+    else:
+        worker_name = ''
     
-    #Uncomment if you meet issue with pool or worker name - This will disable the worker name
-    #worker_name = ''
-    
-    pool_slash = ['nanopool.org','dwarfpool.com']
-    pool_dot = ['ethpool.org','ethermine.org','alpereum.ch']
-    if worker_name:
-        if any(s in remote_host for s in pool_slash):
-            worker_name = '/' + worker_name
-        elif any(d in remote_host for d in pool_dot):
-            worker_name = '.' + worker_name
-        else:
-            #No worker name for compatbility reason
-            print "Unknown pool - Worker name is empty"
-            worker_name = ''
-
     print "Wallet set: " + wallet + worker_name
 
     # now spin up our listening socket
     server_loop(local_host, local_port, remote_host, remote_port)
-
 
 if __name__ == "__main__":
     main()
